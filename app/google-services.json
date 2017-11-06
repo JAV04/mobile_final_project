@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "306392545298",
+    "firebase_url": "https://recipeshare-9444f.firebaseio.com",
+    "project_id": "recipeshare-9444f",
+    "storage_bucket": "recipeshare-9444f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306392545298:android:899196143b37b74e",
+        "android_client_info": {
+          "package_name": "com.colewhitley.recipe_share"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306392545298-gumfqm139fi3hral2oe0dre02mi64tbl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.colewhitley.recipe_share",
+            "certificate_hash": "1c933f63edc0c2de942fc9e86aeb3d15cb499de8"
+          }
+        },
+        {
+          "client_id": "306392545298-m0fbbte95oplnj65v933s1odcls1b5ra.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjvUmqiknzWFNe4x46B5oRywHV7iwKnc4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306392545298-m0fbbte95oplnj65v933s1odcls1b5ra.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
