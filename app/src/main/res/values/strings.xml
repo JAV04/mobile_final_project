@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">recipe-share</string>
     <string name="userName">user</string>
+    <string name="title_activity_create_tab">createTab</string>
 </resources>
