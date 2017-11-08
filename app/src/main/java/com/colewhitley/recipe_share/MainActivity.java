@@ -1,5 +1,6 @@
 package com.colewhitley.recipe_share;
 
+import android.app.LocalActivityManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -69,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         };
 
         host = (TabHost)findViewById(R.id.tabHost);
+        LocalActivityManager mLocalActivityManager = new LocalActivityManager(this, false);
+        mLocalActivityManager.dispatchCreate(savedInstanceState);
+        host.setup(mLocalActivityManager);
         initTabs();
         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
@@ -124,15 +128,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabs() {
-        host.setup();
 
+
+        TabHost.TabSpec tab1 = host.newTabSpec("My Recipies");
+        TabHost.TabSpec tab2 = host.newTabSpec("Create Recipies");
+        TabHost.TabSpec tab3 = host.newTabSpec("Share Recipies");
+
+        // Set the Tab name and Activity
+        // that will be opened when particular Tab will be selected
+        tab1.setIndicator("Tab1");
+        tab1.setContent(new Intent(this,recipeTab.class));
+
+        tab2.setIndicator("Tab2");
+        tab2.setContent(new Intent(this,createTab.class));
+
+        tab3.setIndicator("Tab3");
+        tab3.setContent(new Intent(this,shareTab.class));
+
+        /** Add the tabs  to the TabHost to display. */
+        host.addTab(tab1);
+        host.addTab(tab2);
+        host.addTab(tab3);
+
+
+        /*
         TabHost.TabSpec spec = host.newTabSpec("Tab One");
-        spec.setContent(R.id.tab1);
+        spec.setContent(R.id.recipeTab);
         spec.setIndicator("My Recipes");
         host.addTab(spec);
 
         spec = host.newTabSpec("Tab Two");
-        spec.setContent(R.id.tab2);
+        spec.setContent(R.id.createTab);
         spec.setIndicator("Create Recipe");
         host.addTab(spec);
 
@@ -140,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
         spec.setContent(R.id.tab3);
         spec.setIndicator("Find Recipes");
         host.addTab(spec);
+
+        */
 
         setTabStyle();
     }
