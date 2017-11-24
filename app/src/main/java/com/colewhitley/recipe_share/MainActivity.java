@@ -89,10 +89,12 @@ public class MainActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         //sign user in if they are not
-        if(user == null){ signIn(); }
+        if(user == null) {
+            signIn();
 
-        Toast.makeText(MainActivity.this, "Welcome Back, " + user.getDisplayName(),
-                Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Welcome Back, " + user.getDisplayName(),
+//                    Toast.LENGTH_SHORT).show();
+        }
     }
 
 
