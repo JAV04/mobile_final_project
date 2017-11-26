@@ -80,16 +80,18 @@ public class MainActivity extends AppCompatActivity {
                 setTabStyle();
             }
         });
+        init();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    //cole changes this to init() from onStart()
+    public void init() {
+        //super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         user = mAuth.getCurrentUser();
 
         //sign user in if they are not
         if(user == null) {
+            Log.d("login", "Uh oh why arent you logged in?");
             signIn();
 
 //            Toast.makeText(MainActivity.this, "Welcome Back, " + user.getDisplayName(),
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
+            Log.d("auth listener", "Auth listener stopped");
         }
     }
 
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("activ result", "HERE");
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
