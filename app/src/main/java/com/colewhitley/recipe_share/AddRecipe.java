@@ -57,6 +57,10 @@ public class AddRecipe extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    //user info
+    private String useremail;
+    private String username;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,46 +69,44 @@ public class AddRecipe extends AppCompatActivity {
 
         camera_btn = findViewById(R.id.camera_btn);
         gallery_btn = findViewById(R.id.gallery_btn);
+        add_btn = findViewById(R.id.add_btn);
 
         title_text = findViewById(R.id.title_text);
         tags_text = findViewById(R.id.tags_text);
 
-        add_btn = findViewById(R.id.add_btn);
+        String title = title_text.getText().toString();
+
         mImageView = findViewById(R.id.image_view);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            useremail = extras.getString("useremail");
+            username = extras.getString("username");
+            Log.d("USERNAME", username);
+            Log.d("USEREMAIL", useremail);
+        }
 
 
         GoogleApiClient mGoogleApiClient;
 
         //set up fileStore
-//        storageRef = FirebaseStorage.getInstance().getReference();
-//
-//        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//        //api client. Gives us access to google apis
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .enableAutoManage(this /* FragmentActivity */, null /* OnConnectionFailedListener */)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-//                .build();
-//        //firebase auth instance
-//        mAuth = FirebaseAuth.getInstance();
-//        //simple listener that checks if the user signs in/out while already in app
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if (user != null) {
-//                    Log.d("SignIn", "onAuthStateChanged:signed_in:" + user.getUid());
-//                } else {
-//                    Log.d("SignIn", "onAuthStateChanged:signed_out");
-//                }
-//            }
-//        };
-//        storageRef = FirebaseStorage.getInstance().getReference();
-//        //mountainsRef = mStorageRef.child("images/recipe.png");
-//
-//        /////////////////////////////////////////////////////////
+        mAuth = FirebaseAuth.getInstance();
+
+        //dont know if i need this...
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d("SignIn", "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    Log.d("SignIn", "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
+        storageRef = FirebaseStorage.getInstance().getReference();
+        imageRef = storageRef.child(useremail + "/" + title + ".jpg");
 
         camera_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -121,6 +123,14 @@ public class AddRecipe extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, GALLERY_INTENT);
+            }
+        });
+
+        add_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //stuff to add the image to filestore
+                //need username / email
             }
         });
     }
@@ -161,33 +171,38 @@ public class AddRecipe extends AppCompatActivity {
             try {
                 bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
                 mImageView.setImageBitmap(bitmap);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] outData = baos.toByteArray();
-
-//            UploadTask uploadTask = imageRef.putBytes(outData);
-//            uploadTask.addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    // Handle unsuccessful uploads
-//                }
-//            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-//                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-//                }
-//            });
-                //uploadFile("/storage/emulated/0/DCIM/Camera/IMG_20171126_230117.jpg", "IMG_20171126_230117.jpg");
-
+                uploadImage(bitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
         else if(requestCode == CAMERA_INTENT && resultCode == RESULT_OK){
             galleryAddPic();
-            setPic();
+            Bitmap bitmap = setPic();
+            uploadImage(bitmap);
+
         }
+    }
+
+    private void uploadImage(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] outData = baos.toByteArray();
+        UploadTask uploadTask = imageRef.putBytes(outData);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Log.d("UPLOAD", "FAILURE");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Log.d("UPLOAD", "SUCCESS");
+            }
+        });
     }
 
     private File createImageFile() throws IOException {
@@ -214,7 +229,7 @@ public class AddRecipe extends AppCompatActivity {
         this.sendBroadcast(mediaScanIntent);
     }
 
-    private void setPic() {
+    private Bitmap setPic() {
         // Get the dimensions of the View
         int targetW = mImageView.getWidth();
         int targetH = mImageView.getHeight();
@@ -238,29 +253,8 @@ public class AddRecipe extends AppCompatActivity {
         mImageView.setImageBitmap(bitmap);
 //        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
 //        mImageView.setBackground(ob);
-    }
 
-    private void uploadFile(String path, String name){
-        Uri file = Uri.fromFile(new File(path));
-        StorageReference riversRef = storageRef.child(name);
-
-        riversRef.putFile(file)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Log.d("SUCCESS", "SUCCESS");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        // ...
-                        Log.d("FAILURE", "FAILURE");
-                    }
-                });
+        return bitmap;
     }
 
 }
