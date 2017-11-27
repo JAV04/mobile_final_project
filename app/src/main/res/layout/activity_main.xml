@@ -11,9 +11,10 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/headerLayout"
-        android:layout_width="0dp"
-        android:layout_height="135dp"
+        android:layout_width="match_parent"
+        android:layout_height="166dp"
         android:background="@color/colorPrimaryDark"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,48 +23,62 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_recipe" />
+
     </android.support.constraint.ConstraintLayout>
 
-    <TabHost
-        android:id="@+id/tabHost"
-        android:layout_width="0dp"
-        android:layout_height="421dp"
-        android:background="@color/colorPrimary"
-        app:layout_constraintHorizontal_bias="0.0"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:paddingBottom="25dp"
+        android:paddingEnd="40dp"
+        android:paddingStart="40dp"
+        android:paddingTop="20dp"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
-        <LinearLayout
+        <Button
+            android:id="@+id/button4"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/roundedbtn"
+            android:text="My Recipe Book"
+            android:textColor="@color/textColor" />
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/colorAccent"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="626dp" />
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/roundedbtn"
+            android:text="Add Recipe"
+            android:textColor="@color/textColor" />
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/roundedbtn"
+            android:text="Find Recipies"
+            android:textColor="@color/textColor" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
