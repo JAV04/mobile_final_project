@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     GoogleApiClient mGoogleApiClient;
     private GoogleSignInOptions gso;
+    private Button add_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+        add_btn = findViewById(R.id.add_btn);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        user = mAuth.getCurrentUser();      user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
 
         //sign user in if they are not
         if(user == null) {
@@ -78,6 +83,16 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(MainActivity.this, "Welcome Back, " + user.getDisplayName(),
 //                    Toast.LENGTH_SHORT).show();
         }
+        add_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Log.d("add in main", "HERE");
+                Intent intent = new Intent(MainActivity.this, AddRecipe.class);
+                intent.putExtra("useremail", user.getEmail());
+                intent.putExtra("username", user.getDisplayName());
+                MainActivity.this.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -101,11 +116,13 @@ public class MainActivity extends AppCompatActivity {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d("SIGNIN", result.getStatus().toString());
             if (result.isSuccess()) {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
+                Log.d("google sign in", "FAILED");
                 // Google Sign In failed, update UI appropriately
             }
         }
