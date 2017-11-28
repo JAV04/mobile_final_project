@@ -1,16 +1,15 @@
 package com.colewhitley.recipe_share;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +17,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,8 +37,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddRecipe extends AppCompatActivity {
 
@@ -54,6 +61,9 @@ public class AddRecipe extends AppCompatActivity {
     ImageView mImageView;
     String mCurrentPhotoPath;
 
+    String viewPage;
+    String signPage;
+
     StorageReference storageRef;
     StorageReference imageRef;
     private GoogleSignInOptions gso;
@@ -65,11 +75,18 @@ public class AddRecipe extends AppCompatActivity {
     private String useremail;
     private String username;
 
+    RequestQueue queue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
+
+        queue = Volley.newRequestQueue(getApplicationContext());
+
+        viewPage = "https://recipeshare-9444f.appspot.com";
+        signPage = "https://recipeshare-9444f.appspot.com";
 
         camera_btn = findViewById(R.id.camera_btn);
         gallery_btn = findViewById(R.id.gallery_btn);
@@ -216,6 +233,42 @@ public class AddRecipe extends AppCompatActivity {
                 Log.d("UPLOAD", "SUCCESS");
             }
         });
+
+        StringRequest postReq = new StringRequest(Request.Method.POST, signPage,
+                new Response.Listener<String>() {       // listener, will be called with HTTP response
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("volley: ", "POST response received.");
+                        Log.d("response: ", response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {    // volley error callback
+                Log.e("volley:", "error! " + error.toString());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {  // create data for POST message body
+                Map<String, String> params = new HashMap<String, String>();
+
+                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+                Date now = new Date();
+
+                Log.d("POST","Posting ");
+
+                params.put("recipeName", recipe_name);
+                params.put("tags", tags_text.getText().toString());
+                params.put("userName", username);
+                params.put("userEmail", useremail);
+                params.put("imagePath", useremail + "/" + recipe_name + ".png");
+                params.put("date", dateFormat.format(now));
+                params.put("public", "1");
+
+                return params;
+            }
+        };
+        queue.add(postReq);
+
 
     }
 
