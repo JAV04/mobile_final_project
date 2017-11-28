@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -40,12 +41,15 @@ public class AddRecipe extends AppCompatActivity {
     static final int GALLERY_INTENT = 1;
     static final int CAMERA_INTENT = 2;
 
+    Bitmap bitmap;
+
     Button camera_btn;
     Button gallery_btn;
     Button add_btn;
 
     EditText title_text;
     EditText tags_text;
+    String recipe_name;
 
     ImageView mImageView;
     String mCurrentPhotoPath;
@@ -74,7 +78,6 @@ public class AddRecipe extends AppCompatActivity {
         title_text = findViewById(R.id.title_text);
         tags_text = findViewById(R.id.tags_text);
 
-        String title = title_text.getText().toString();
 
         mImageView = findViewById(R.id.image_view);
 
@@ -106,7 +109,6 @@ public class AddRecipe extends AppCompatActivity {
         };
 
         storageRef = FirebaseStorage.getInstance().getReference();
-        imageRef = storageRef.child(useremail + "/" + title + ".jpg");
 
         camera_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -131,6 +133,19 @@ public class AddRecipe extends AppCompatActivity {
             public void onClick(View v){
                 //stuff to add the image to filestore
                 //need username / email
+                recipe_name = title_text.getText().toString();
+                if(bitmap == null){
+                    Toast.makeText(getApplicationContext(), "Select and Image First!", Toast.LENGTH_SHORT).show();
+                }
+                else if(recipe_name.equals("")){
+                    Toast.makeText(getApplicationContext(), "Name your recipe", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    uploadImage(bitmap);
+                    Toast.makeText(getApplicationContext(), "Recipe uploaded!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AddRecipe.this, MainActivity.class);
+                    AddRecipe.this.startActivity(intent);
+                }
             }
         });
     }
@@ -167,7 +182,6 @@ public class AddRecipe extends AppCompatActivity {
             Log.d("SET GALLERY", "SETTING A PICTURE FROM GALLERY");
             Uri targetUri = data.getData();
             //text.setText(targetUri.toString());
-            Bitmap bitmap;
             try {
                 bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
                 mImageView.setImageBitmap(bitmap);
@@ -178,13 +192,12 @@ public class AddRecipe extends AppCompatActivity {
         }
         else if(requestCode == CAMERA_INTENT && resultCode == RESULT_OK){
             galleryAddPic();
-            Bitmap bitmap = setPic();
-            uploadImage(bitmap);
-
+            bitmap = setPic();
         }
     }
 
     private void uploadImage(Bitmap bitmap) {
+        imageRef = storageRef.child(useremail + "/" + recipe_name + ".png");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] outData = baos.toByteArray();
@@ -203,6 +216,7 @@ public class AddRecipe extends AppCompatActivity {
                 Log.d("UPLOAD", "SUCCESS");
             }
         });
+
     }
 
     private File createImageFile() throws IOException {
