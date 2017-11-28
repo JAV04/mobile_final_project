@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/recipes_btn"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
