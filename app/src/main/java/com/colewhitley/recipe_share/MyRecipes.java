@@ -1,48 +1,46 @@
 package com.colewhitley.recipe_share;
 
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.colewhitley.recipe_share.adapter.recipeAdapter;
+import com.colewhitley.recipe_share.model.Recipe;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MyRecipes extends AppCompatActivity {
 
     ListView listView;
-    ArrayList<String> items;
+    ArrayList<Recipe> recipes;
 
-    StorageReference storageRef;
-    StorageReference imageRef;
     String imagePath;
 
     String useremail;
+    String username;
 
     String viewPage;
     String signPage;
+
+
+    StorageReference storageRef;
+    StorageReference imageRef;
+
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,97 +49,69 @@ public class MyRecipes extends AppCompatActivity {
 
         viewPage = "https://recipeshare-9444f.appspot.com";
         signPage = "https://recipeshare-9444f.appspot.com";
+
         Bundle extras = getIntent().getExtras();
         if(extras != null){
             useremail = extras.getString("useremail");
-            Log.d("USEREMAIL", useremail);
+            username = extras.getString("username");
         }
 
-        listView = findViewById(R.id.recipe_view);
-        items = new ArrayList<>();
-        items.add("one");
-        items.add("two");
-        items.add("three");
-        items.add("four");
-        items.add("five");
-        items.add("six");
 
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.mylist, R.id.Itemname, items);
-        listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String text = listView.getItemAtPosition(i).toString();
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
 
+        init();
+//
+
+    }
+
+
+    public void init(){
         imagePath = "gs://recipeshare-9444f.appspot.com";
+        recipes = new ArrayList<Recipe>();
         storageRef = FirebaseStorage.getInstance().getReference();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.item_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                ArrayList<String> tempList = new ArrayList<>();
-                for(String temp : items){
-                    if(temp.toLowerCase().contains(s.toLowerCase())){
-                        tempList.add(temp);
+        queue = Volley.newRequestQueue(getApplicationContext());  // create volley request queue
+        JsonObjectRequest getReq = new JsonObjectRequest(Request.Method.GET, viewPage, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("volley: ", "GET response received.");
+                        Log.d("length", String.valueOf(response.length()));
+                        //list.add(response.toString());
+                        try {
+                            populateArrayList(response);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(MyRecipes.this, android.R.layout.simple_list_item_1, tempList);
-                listView.setAdapter(adapter);
-                return true;
-            }
-        });
 
-        return super.onCreateOptionsMenu(menu);
-    }
-//    public void init(){
-//        JsonObjectRequest getReq = new JsonObjectRequest(Request.Method.GET, viewPage, null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.d("volley: ", "GET response received.");
-//                        try {
-//                            Log.d("length", String.valueOf(response.length()));
-//                            Log.d("response: ", response.getJSONObject("0").getString("summary"));
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                        //list.add(response.toString());
-//                        try {
-//                            populateListView(response);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    private void populateListView(JSONObject response) throws JSONException {
-//                        int i;
-//                        int j = 0;
-//                        for(i=0; i<response.length(); i++) {
-//                            String reqEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
-//                            if(reqEmail.equalsIgnoreCase(useremail) {
-//                                OrderSummary myOrder = new OrderSummary(response.getJSONObject(String.valueOf(i)),currUser);
-//                                orders.add(j, myOrder);
-//                                j += 1;
-//                            }
-//                        }
-//
+                    private void populateArrayList(JSONObject response) throws JSONException {
+                        int i;
+                        for(i=0; i<response.length(); i++) {
+                            String reqEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
+                            Log.d("LOOK FOR ME HERHEHEHRE",reqEmail);
+                            Log.d("LOOK FOR ME HERHEHEHRE",useremail);
+                            if(reqEmail.equalsIgnoreCase(useremail)) {
+                                String recipeName = response.getJSONObject(String.valueOf(i)).getString("recipeName");
+                                String imagePath = response.getJSONObject(String.valueOf(i)).getString("imagePath");
+                                String tags = response.getJSONObject(String.valueOf(i)).getString("tags");
+                                String user = response.getJSONObject(String.valueOf(i)).getString("userName");
+                                int owner = Integer.parseInt(response.getJSONObject(String.valueOf(i)).getString("owner"));
+                                Log.d("LOOK FOR ME HERHEHEHRE","1 HWRE");
+                                if(owner != 0) {
+                                    Log.d("LOOK FOR ME HERHEHEHRE","2 HWRE");
+                                    recipes.add(new Recipe(recipeName,tags,imagePath,user));
+                                }
+
+//                                Glide.with(getApplicationContext())
+//                                        .using(new FirebaseImageLoader())
+//                                        .load(imageRef)
+//                                        .into(null);
+                            }
+
+                        }
+                        Log.d("LOOK FOR ME HERHEHEHRE",Integer.toString(recipes.size()));
+                        initViews();
+
 //                        Collections.sort(orders, new Comparator<OrderSummary>() {
 //                            DateFormat myFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 //
@@ -154,20 +124,76 @@ public class MyRecipes extends AppCompatActivity {
 //                                }
 //                            }
 //                        });
-//
-//
-//
-//                        ArrayAdapter<OrderSummary> adapter = new ArrayAdapter<OrderSummary>(getApplicationContext(),android.R.layout.simple_selectable_list_item, orders);
-//                        pastOrders.setAdapter(adapter);
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.e("volley:", "error! " +  error.toString());
-//            }
-//        } );
-//        queue.add(getReq);
-//
-//    }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("volley:", "error! " +  error.toString());
+            }
+        } );
+        queue.add(getReq);
+
+        Log.d("I AM HERE",  "I AM HERE");
+
+
+
+    }
+
+    private void initViews(){
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.card_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+        recyclerView.setLayoutManager(layoutManager);
+
+
+        Log.d("LOOK FOR ME 2",Integer.toString(recipes.size()));
+        recipeAdapter adapter = new recipeAdapter(getApplicationContext(), recipes);
+        recyclerView.setAdapter(adapter);
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu, menu);
+//        MenuItem searchItem = menu.findItem(R.id.item_search);
+//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String s) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String s) {
+//                ArrayList<String> tempList = new ArrayList<>();
+//                for(String temp : items){
+//                    if(temp.toLowerCase().contains(s.toLowerCase())){
+//                        tempList.add(temp);
+//                    }
+//                }
+//                ArrayAdapter<String> adapter = new ArrayAdapter<>(MyRecipes.this, android.R.layout.simple_list_item_1, tempList);
+//                listView.setAdapter(adapter);
+//                return true;
+//            }
+//        });
+//
+//        return super.onCreateOptionsMenu(menu);
+//    }

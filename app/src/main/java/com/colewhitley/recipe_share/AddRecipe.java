@@ -262,7 +262,7 @@ public class AddRecipe extends AppCompatActivity {
                 params.put("userEmail", useremail);
                 params.put("imagePath", useremail + "/" + recipe_name + ".png");
                 params.put("date", dateFormat.format(now));
-                params.put("public", "1");
+                params.put("owner", "1");
 
                 return params;
             }
