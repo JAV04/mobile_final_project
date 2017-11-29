@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.colewhitley.recipe_share.R;
 import com.colewhitley.recipe_share.model.Recipe;
+import com.colewhitley.recipe_share.model.Tags;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -42,10 +43,11 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
     public void onBindViewHolder(recipeAdapter.ViewHolder viewHolder, int i) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageRef.child(recipes.get(i).imagePath);
+        Tags tags = new Tags(recipes.get(i).tags);
 
 
         viewHolder.recipeName.setText(recipes.get(i).recipeName);
-        viewHolder.tags.setText("This is my TAG");
+        viewHolder.tags.setText(tags.toString());
         Log.d("LOOK FOR ME",recipes.get(i).imagePath);
         Glide.with(context)
                 .using(new FirebaseImageLoader())

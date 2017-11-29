@@ -72,7 +72,7 @@
             android:textColor="@color/textColor" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/find_btn"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"

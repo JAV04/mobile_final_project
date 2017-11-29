@@ -2,7 +2,6 @@ package com.colewhitley.recipe_share;
 
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.volley.Request;
@@ -22,7 +20,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.colewhitley.recipe_share.adapter.recipeAdapter;
 import com.colewhitley.recipe_share.model.Recipe;
-import com.colewhitley.recipe_share.model.Tags;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,7 +28,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MyRecipes extends AppCompatActivity {
+/**
+ * Created by whitguy on 11/28/17.
+ */
+
+public class FindRecipe extends AppCompatActivity {
 
     ListView listView;
     ArrayList<Recipe> recipes;
@@ -55,7 +56,7 @@ public class MyRecipes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_recipes);
+        setContentView(R.layout.activity_find_recipe);
 
         viewPage = "https://recipeshare-9444f.appspot.com";
         signPage = "https://recipeshare-9444f.appspot.com";
@@ -98,7 +99,7 @@ public class MyRecipes extends AppCompatActivity {
                             String reqEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
                             Log.d("LOOK FOR ME HERHEHEHRE", reqEmail);
                             Log.d("LOOK FOR ME HERHEHEHRE", useremail);
-                            if (reqEmail.equalsIgnoreCase(useremail)) {
+//                            if (reqEmail.equalsIgnoreCase(useremail)) {
                                 String recipeName = response.getJSONObject(String.valueOf(i)).getString("recipeName");
                                 String imagePath = response.getJSONObject(String.valueOf(i)).getString("imagePath");
                                 String tags = response.getJSONObject(String.valueOf(i)).getString("tags");
@@ -114,7 +115,7 @@ public class MyRecipes extends AppCompatActivity {
 //                                        .using(new FirebaseImageLoader())
 //                                        .load(imageRef)
 //                                        .into(null);
-                            }
+//                            }
 
                         }
                         Log.d("LOOK FOR ME HERHEHEHRE", Integer.toString(recipes.size()));
@@ -147,7 +148,7 @@ public class MyRecipes extends AppCompatActivity {
     }
 
     private void initViews() {
-        recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view2);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
@@ -174,16 +175,9 @@ public class MyRecipes extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 ArrayList<Recipe> tempList = new ArrayList<>();
-                Tags tags;
                 for (Recipe temp : recipes) {
-                    tags = new Tags(temp.tags);
                     if (temp.recipeName.toLowerCase().contains(s.toLowerCase())) {
                         tempList.add(temp);
-                    }
-                    for(String tag: tags.tagsList){
-                        if(tag.toLowerCase().contains(s.toLowerCase())){
-                            tempList.add(temp);
-                        }
                     }
                 }
                 recipeAdapter adapter = new recipeAdapter(getApplicationContext(), tempList);
@@ -196,4 +190,5 @@ public class MyRecipes extends AppCompatActivity {
 
         return super.onCreateOptionsMenu(menu);
     }
+
 }
