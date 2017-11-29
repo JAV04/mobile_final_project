@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.colewhitley.recipe_share.adapter.recipeAdapter;
 import com.colewhitley.recipe_share.model.Recipe;
+import com.colewhitley.recipe_share.model.Tags;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -175,9 +176,16 @@ public class FindRecipe extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 ArrayList<Recipe> tempList = new ArrayList<>();
+                Tags tags;
                 for (Recipe temp : recipes) {
+                    tags = new Tags(temp.tags);
                     if (temp.recipeName.toLowerCase().contains(s.toLowerCase())) {
                         tempList.add(temp);
+                    }
+                    for(String tag: tags.tagsList){
+                        if(tag.toLowerCase().contains(s.toLowerCase())){
+                            tempList.add(temp);
+                        }
                     }
                 }
                 recipeAdapter adapter = new recipeAdapter(getApplicationContext(), tempList);
