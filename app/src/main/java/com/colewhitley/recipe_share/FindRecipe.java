@@ -109,7 +109,7 @@ public class FindRecipe extends AppCompatActivity {
                                 Log.d("LOOK FOR ME HERHEHEHRE", "1 HWRE");
                                 if (owner != 0) {
                                     Log.d("LOOK FOR ME HERHEHEHRE", "2 HWRE");
-                                    recipes.add(new Recipe(recipeName, tags, imagePath, user));
+                                    recipes.add(new Recipe(user + "'s " + recipeName, tags, imagePath, user));
                                 }
 
 //                                Glide.with(getApplicationContext())
