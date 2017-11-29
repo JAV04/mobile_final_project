@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     GoogleApiClient mGoogleApiClient;
     private GoogleSignInOptions gso;
     private Button add_btn;
+    private Button recipes_btn;
+    private Button find_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         add_btn = findViewById(R.id.add_btn);
+        recipes_btn = findViewById(R.id.recipes_btn);
+        find_btn = findViewById(R.id.find_btn);
     }
 
     @Override
@@ -88,6 +92,28 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 Log.d("add in main", "HERE");
                 Intent intent = new Intent(MainActivity.this, AddRecipe.class);
+                intent.putExtra("useremail", user.getEmail());
+                intent.putExtra("username", user.getDisplayName());
+                MainActivity.this.startActivity(intent);
+            }
+        });
+
+        recipes_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("SWITCH", "GOING TO MY RECIPES");
+                Intent intent = new Intent(MainActivity.this, MyRecipes.class);
+                intent.putExtra("useremail", user.getEmail());
+                intent.putExtra("username", user.getDisplayName());
+                MainActivity.this.startActivity(intent);
+            }
+        });
+
+        find_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("SWITCH", "GOING TO FIND RECIPES");
+                Intent intent = new Intent(MainActivity.this, FindRecipe.class);
                 intent.putExtra("useremail", user.getEmail());
                 intent.putExtra("username", user.getDisplayName());
                 MainActivity.this.startActivity(intent);

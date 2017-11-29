@@ -195,7 +195,7 @@ public class AddRecipe extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("HERE", "WE ARE HERE");
 
-        if(requestCode == GALLERY_INTENT) {
+        if(requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
             Log.d("SET GALLERY", "SETTING A PICTURE FROM GALLERY");
             Uri targetUri = data.getData();
             //text.setText(targetUri.toString());
@@ -262,7 +262,7 @@ public class AddRecipe extends AppCompatActivity {
                 params.put("userEmail", useremail);
                 params.put("imagePath", useremail + "/" + recipe_name + ".png");
                 params.put("date", dateFormat.format(now));
-                params.put("public", "1");
+                params.put("owner", "1");
 
                 return params;
             }
