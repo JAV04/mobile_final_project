@@ -105,11 +105,12 @@ public class FindRecipe extends AppCompatActivity {
                                 String imagePath = response.getJSONObject(String.valueOf(i)).getString("imagePath");
                                 String tags = response.getJSONObject(String.valueOf(i)).getString("tags");
                                 String user = response.getJSONObject(String.valueOf(i)).getString("userName");
+                                String userEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
                                 int owner = Integer.parseInt(response.getJSONObject(String.valueOf(i)).getString("owner"));
                                 Log.d("LOOK FOR ME HERHEHEHRE", "1 HWRE");
                                 if (owner != 0) {
                                     Log.d("LOOK FOR ME HERHEHEHRE", "2 HWRE");
-                                    recipes.add(new Recipe(user + "'s " + recipeName, tags, imagePath, user));
+                                    recipes.add(new Recipe(user + "'s " + recipeName, tags, imagePath, user, userEmail));
                                 }
 
 //                                Glide.with(getApplicationContext())
