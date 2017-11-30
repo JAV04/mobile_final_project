@@ -46,7 +46,6 @@ public class FindRecipe extends AppCompatActivity {
     String viewPage;
     String signPage;
 
-
     StorageReference storageRef;
     StorageReference imageRef;
 
@@ -67,13 +66,9 @@ public class FindRecipe extends AppCompatActivity {
             useremail = extras.getString("useremail");
             username = extras.getString("username");
         }
-
-
         init();
 //
-
     }
-
 
     public void init() {
         imagePath = "gs://recipeshare-9444f.appspot.com";
