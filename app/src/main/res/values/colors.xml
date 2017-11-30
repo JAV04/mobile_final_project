@@ -5,6 +5,7 @@
     <color name="colorSelectedTab">#de118cb3</color>
     <color name="colorAccent">#d0006483</color>
     <color name="textColor">#ffffff</color>
+    <color name="landingColor">#7bb4fcf1</color>
     <color name="colorPrimaryBtn">#4f11aeb3</color>
 </resources>
 

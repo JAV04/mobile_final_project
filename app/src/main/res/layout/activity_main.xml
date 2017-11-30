@@ -9,22 +9,24 @@
     tools:layout_editor_absoluteY="0dp"
     tools:layout_editor_absoluteX="0dp">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/headerLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="166dp"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_height="729dp"
+        android:background="@drawable/landingpage"
+        android:orientation="vertical"
+        android:paddingBottom="25dp"
+        android:paddingEnd="40dp"
+        android:paddingStart="40dp"
+        android:paddingTop="20dp"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1">
+        tools:layout_editor_absoluteY="0dp">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -34,25 +36,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_recipe" />
 
-    </android.support.constraint.ConstraintLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        android:paddingBottom="25dp"
-        android:paddingEnd="40dp"
-        android:paddingStart="40dp"
-        android:paddingTop="20dp"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout">
-
         <Button
             android:id="@+id/recipes_btn"
             android:layout_width="match_parent"
@@ -60,7 +43,9 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/roundedbtn"
             android:text="My Recipe Book"
-            android:textColor="@color/textColor" />
+            android:textColor="@color/textColor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/add_btn"
@@ -69,7 +54,9 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/roundedbtn"
             android:text="Add Recipe"
-            android:textColor="@color/textColor" />
+            android:textColor="@color/textColor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/find_btn"
@@ -78,7 +65,9 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/roundedbtn"
             android:text="Find Recipies"
-            android:textColor="@color/textColor" />
+            android:textColor="@color/textColor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
