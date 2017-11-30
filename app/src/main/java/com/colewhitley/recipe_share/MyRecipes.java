@@ -293,7 +293,7 @@ public class MyRecipes extends AppCompatActivity {
     }
 
     private void uploadImage(Bitmap bitmap) {
-        imageRef = storageRef.child(sendEmail + "/" + sendRecipe.recipeName + ".png");
+        imageRef = storageRef.child(sendEmail + "/" + sendRecipe.userName + "'s " + sendRecipe.recipeName + ".png");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] outData = baos.toByteArray();
