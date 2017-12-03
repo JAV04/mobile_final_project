@@ -90,7 +90,6 @@ public class FindRecipe extends AppCompatActivity {
             username = extras.getString("username");
         }
         init();
-//
     }
 
     public void init() {

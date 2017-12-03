@@ -1,5 +1,6 @@
 package com.colewhitley.recipe_share;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,8 +17,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -76,6 +80,8 @@ public class MyRecipes extends AppCompatActivity {
     RequestQueue queue;
 
     RecyclerView recyclerView;
+    Bitmap loadBitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +131,7 @@ public class MyRecipes extends AppCompatActivity {
                         int i;
                         for (i = 0; i < response.length(); i++) {
                             String reqEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
+                            Log.d("POPULATE", "POPULATING ARRAY LIST");
                             Log.d("LOOK FOR ME HERHEHEHRE", reqEmail);
                             Log.d("LOOK FOR ME HERHEHEHRE", useremail);
                             if (reqEmail.equalsIgnoreCase(useremail)) {
@@ -135,10 +142,10 @@ public class MyRecipes extends AppCompatActivity {
                                 String userEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
                                 int owner = Integer.parseInt(response.getJSONObject(String.valueOf(i)).getString("owner"));
                                 Log.d("LOOK FOR ME HERHEHEHRE", "1 HWRE");
-                                if (owner != 0) {
+                                //if (owner != 0) {
                                     Log.d("LOOK FOR ME HERHEHEHRE", "2 HWRE");
                                     recipes.add(new Recipe(recipeName, tags, imagePath, user, userEmail));
-                                }
+                                //}
 
 //                                Glide.with(getApplicationContext())
 //                                        .using(new FirebaseImageLoader())
@@ -190,6 +197,48 @@ public class MyRecipes extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 //Toast.makeText(MyRecipes.this, "click at position " + position, Toast.LENGTH_SHORT).show();
+
+//                Recipe loadRecipe = recipes.get(position);
+//                Log.d("PATH", loadRecipe.userEmail + "/" + loadRecipe.recipeName + ".png");
+//                imageRef = storageRef.child(loadRecipe.userEmail + "/" + loadRecipe.recipeName + ".png");
+//
+//                final Dialog nagDialog = new Dialog(MyRecipes.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                nagDialog.setCancelable(false);
+//                nagDialog.setContentView(R.layout.preview_image);
+//                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
+//                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+//
+//
+//                Thread t = new Thread(){
+//                    //Bitmap bitmap = null;
+//                    public void run(){
+//                        try {
+//                            loadBitmap = Glide.with(getApplicationContext())
+//                                    .using(new FirebaseImageLoader())
+//                                    .load(imageRef).asBitmap().into(-1, -1).get();
+//                            if (loadBitmap != null)
+//                                Log.d("SEE RECIPE", "BITMAP NOT NULL");
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        } catch (ExecutionException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                };
+//                t.start();
+//                ivPreview.setImageBitmap(loadBitmap);
+//
+//                btnClose.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View arg0) {
+//
+//                        nagDialog.dismiss();
+//                    }
+//                });
+//                nagDialog.show();
+
             }
 
             @Override
