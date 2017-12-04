@@ -9,6 +9,7 @@ public class Recipe {
         public String recipeName;
         public String tags;
         public String imagePath;
+        public String cookedPath;
         public String userName;
         public String userEmail;
 

@@ -132,8 +132,6 @@ public class MyRecipes extends AppCompatActivity {
                         for (i = 0; i < response.length(); i++) {
                             String reqEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
                             Log.d("POPULATE", "POPULATING ARRAY LIST");
-                            Log.d("LOOK FOR ME HERHEHEHRE", reqEmail);
-                            Log.d("LOOK FOR ME HERHEHEHRE", useremail);
                             if (reqEmail.equalsIgnoreCase(useremail)) {
                                 String recipeName = response.getJSONObject(String.valueOf(i)).getString("recipeName");
                                 String imagePath = response.getJSONObject(String.valueOf(i)).getString("imagePath");
@@ -141,11 +139,7 @@ public class MyRecipes extends AppCompatActivity {
                                 String user = response.getJSONObject(String.valueOf(i)).getString("userName");
                                 String userEmail = response.getJSONObject(String.valueOf(i)).getString("userEmail");
                                 int owner = Integer.parseInt(response.getJSONObject(String.valueOf(i)).getString("owner"));
-                                Log.d("LOOK FOR ME HERHEHEHRE", "1 HWRE");
-                                //if (owner != 0) {
-                                    Log.d("LOOK FOR ME HERHEHEHRE", "2 HWRE");
                                     recipes.add(new Recipe(recipeName, tags, imagePath, user, userEmail));
-                                //}
 
 //                                Glide.with(getApplicationContext())
 //                                        .using(new FirebaseImageLoader())
@@ -154,7 +148,6 @@ public class MyRecipes extends AppCompatActivity {
                             }
 
                         }
-                        Log.d("LOOK FOR ME HERHEHEHRE", Integer.toString(recipes.size()));
                         initViews();
 
 //                        Collections.sort(orders, new Comparator<OrderSummary>() {
@@ -189,8 +182,6 @@ public class MyRecipes extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
 
-
-        Log.d("LOOK FOR ME 2", Integer.toString(recipes.size()));
         recipeAdapter adapter = new recipeAdapter(getApplicationContext(), recipes);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerViewClickListener(getApplicationContext(), recyclerView, new RecyclerViewClickListener.OnItemClickListener() {
@@ -285,8 +276,6 @@ public class MyRecipes extends AppCompatActivity {
                                 };
                                 t.start();
                                 Toast.makeText(MyRecipes.this, "Recipe sent to " + sendEmail, Toast.LENGTH_SHORT).show();
-
-
 
                             }
                         });

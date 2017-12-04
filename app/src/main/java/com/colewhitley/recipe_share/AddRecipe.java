@@ -45,20 +45,24 @@ import java.util.Map;
 
 public class AddRecipe extends AppCompatActivity {
 
-    static final int GALLERY_INTENT = 1;
-    static final int CAMERA_INTENT = 2;
+    static final int GALLERY_INTENT_RECIPE = 1;
+    static final int GALLERY_INTENT_COOKED = 2;
+    static final int CAMERA_INTENT_RECIPE = 3;
+    static final int CAMERA_INTENT_COOKED = 4;
 
-    Bitmap bitmap;
 
-    Button camera_btn;
-    Button gallery_btn;
+    Bitmap bitmap_recipe;
+    Bitmap bitmap_cooked;
+
     Button add_btn;
 
     EditText title_text;
     EditText tags_text;
     String recipe_name;
 
-    ImageView mImageView;
+    ImageView instructionImgView;
+    ImageView cookedImgView;
+
     String mCurrentPhotoPath;
 
     String viewPage;
@@ -77,7 +81,6 @@ public class AddRecipe extends AppCompatActivity {
 
     RequestQueue queue;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,15 +91,45 @@ public class AddRecipe extends AppCompatActivity {
         viewPage = "https://recipeshare-9444f.appspot.com";
         signPage = "https://recipeshare-9444f.appspot.com";
 
-        camera_btn = findViewById(R.id.camera_btn);
-        gallery_btn = findViewById(R.id.gallery_btn);
         add_btn = findViewById(R.id.add_btn);
 
         title_text = findViewById(R.id.title_text);
         tags_text = findViewById(R.id.tags_text);
 
 
-        mImageView = findViewById(R.id.image_view);
+        instructionImgView = findViewById(R.id.instrimg);
+        instructionImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent(CAMERA_INTENT_RECIPE);
+            }
+        });
+        instructionImgView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, GALLERY_INTENT_RECIPE);
+                return false;
+            }
+        });
+
+        cookedImgView = findViewById(R.id.cookedimg);
+        cookedImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent(CAMERA_INTENT_COOKED);
+            }
+        });
+        cookedImgView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, GALLERY_INTENT_COOKED);
+                return false;
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
         if(extras != null){
@@ -127,23 +160,7 @@ public class AddRecipe extends AppCompatActivity {
 
         storageRef = FirebaseStorage.getInstance().getReference();
 
-        camera_btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                dispatchTakePictureIntent();
-            }
-        });
 
-        gallery_btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Log.d("galler_btn", "CLICKING THE GALLERY BTN");
-                //setPic();
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, GALLERY_INTENT);
-            }
-        });
 
         add_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -151,14 +168,15 @@ public class AddRecipe extends AppCompatActivity {
                 //stuff to add the image to filestore
                 //need username / email
                 recipe_name = title_text.getText().toString();
-                if(bitmap == null){
+                if(bitmap_recipe == null || bitmap_cooked == null){
                     Toast.makeText(getApplicationContext(), "Select and Image First!", Toast.LENGTH_SHORT).show();
                 }
                 else if(recipe_name.equals("")){
                     Toast.makeText(getApplicationContext(), "Name your recipe", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    uploadImage(bitmap);
+                    uploadImage(bitmap_recipe,"recipe.png");
+                    uploadImage(bitmap_cooked,"cooked.png");
                     Toast.makeText(getApplicationContext(), "Recipe uploaded!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(AddRecipe.this, MainActivity.class);
                     AddRecipe.this.startActivity(intent);
@@ -167,7 +185,7 @@ public class AddRecipe extends AppCompatActivity {
         });
     }
 
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent(int image) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -184,8 +202,15 @@ public class AddRecipe extends AppCompatActivity {
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "com.colewhitley.android.fileprovider",
                         photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_INTENT);
+
+                if(image == CAMERA_INTENT_RECIPE) {
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_INTENT_RECIPE);
+                }
+                else if(image == CAMERA_INTENT_COOKED){
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_INTENT_COOKED);
+                }
             }
         }
     }
@@ -195,26 +220,42 @@ public class AddRecipe extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("HERE", "WE ARE HERE");
 
-        if(requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
+        if(requestCode == GALLERY_INTENT_RECIPE && resultCode == RESULT_OK) {
             Log.d("SET GALLERY", "SETTING A PICTURE FROM GALLERY");
             Uri targetUri = data.getData();
             //text.setText(targetUri.toString());
             try {
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
-                mImageView.setImageBitmap(bitmap);
-                uploadImage(bitmap);
+                bitmap_recipe = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
+                instructionImgView.setImageBitmap(bitmap_recipe);
+                //uploadImage(bitmap,"recipe.png");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
-        else if(requestCode == CAMERA_INTENT && resultCode == RESULT_OK){
+        if(requestCode == GALLERY_INTENT_COOKED && resultCode == RESULT_OK) {
+            Log.d("SET GALLERY", "SETTING A PICTURE FROM GALLERY");
+            Uri targetUri = data.getData();
+            //text.setText(targetUri.toString());
+            try {
+                bitmap_cooked = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
+                cookedImgView.setImageBitmap(bitmap_cooked);
+                //uploadImage(bitmap,"cooked.png");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(requestCode == CAMERA_INTENT_RECIPE && resultCode == RESULT_OK){
             galleryAddPic();
-            bitmap = setPic();
+            bitmap_recipe = setInstrPic();
+        }
+        else if(requestCode == CAMERA_INTENT_COOKED && resultCode == RESULT_OK){
+            galleryAddPic();
+            bitmap_cooked = setCookedPic();
         }
     }
 
-    private void uploadImage(Bitmap bitmap) {
-        imageRef = storageRef.child(useremail + "/" + recipe_name + ".png");
+    private void uploadImage(Bitmap bitmap, String imageName) {
+        imageRef = storageRef.child(useremail + "/" + recipe_name +"/" + imageName + "/");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] outData = baos.toByteArray();
@@ -260,14 +301,16 @@ public class AddRecipe extends AppCompatActivity {
                 params.put("tags", tags_text.getText().toString());
                 params.put("userName", username);
                 params.put("userEmail", useremail);
-                params.put("imagePath", useremail + "/" + recipe_name + ".png");
+                params.put("imagePath", useremail + "/" + recipe_name + "/");
                 params.put("date", dateFormat.format(now));
                 params.put("owner", "1");
 
                 return params;
             }
         };
-        queue.add(postReq);
+        if (imageName.equalsIgnoreCase("cooked.png")) {
+            queue.add(postReq);
+        }
 
 
     }
@@ -296,10 +339,10 @@ public class AddRecipe extends AppCompatActivity {
         this.sendBroadcast(mediaScanIntent);
     }
 
-    private Bitmap setPic() {
+    private Bitmap setInstrPic() {
         // Get the dimensions of the View
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
+        int targetW = instructionImgView.getWidth();
+        int targetH = instructionImgView.getHeight();
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -317,9 +360,37 @@ public class AddRecipe extends AppCompatActivity {
         bmOptions.inPurgeable = true;
 
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        mImageView.setImageBitmap(bitmap);
+        instructionImgView.setImageBitmap(bitmap);
 //        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
-//        mImageView.setBackground(ob);
+//        instructionImgView.setBackground(ob);
+
+        return bitmap;
+    }
+
+    private Bitmap setCookedPic() {
+        // Get the dimensions of the View
+        int targetW = cookedImgView.getWidth();
+        int targetH = cookedImgView.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        cookedImgView.setImageBitmap(bitmap);
+//        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
+//        instructionImgView.setBackground(ob);
 
         return bitmap;
     }

@@ -1,6 +1,7 @@
 package com.colewhitley.recipe_share.adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +29,8 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
     private ArrayList<Recipe> recipes;
     private Context context;
 
-    public recipeAdapter(Context context,ArrayList<Recipe> android) {
-        this.recipes = android;
+    public recipeAdapter(Context context,ArrayList<Recipe> recipes) {
+        this.recipes = recipes;
         this.context = context;
     }
 
@@ -42,16 +43,18 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
     @Override
     public void onBindViewHolder(recipeAdapter.ViewHolder viewHolder, int i) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageRef.child(recipes.get(i).imagePath);
+        Log.d("LOOK FOR ME",recipes.get(i).imagePath + "recipe.png");
+        StorageReference imageRefRecipe = storageRef.child(recipes.get(i).imagePath + "recipe.png");
+        StorageReference imageRefCooked = storageRef.child(recipes.get(i).imagePath + "cooked.png");
         Tags tags = new Tags(recipes.get(i).tags);
 
 
         viewHolder.recipeName.setText(recipes.get(i).recipeName);
         viewHolder.tags.setText(tags.toString());
-        Log.d("LOOK FOR ME",recipes.get(i).imagePath);
+
         Glide.with(context)
                 .using(new FirebaseImageLoader())
-                .load(imageRef)
+                .load(imageRefRecipe)
                 .into(viewHolder.recipeImage);
 
     }
@@ -65,12 +68,13 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
         private TextView tags;
         private TextView recipeName;
         private ImageView recipeImage;
+
         public ViewHolder(View view) {
             super(view);
 
             tags = (TextView)view.findViewById(R.id.tags);
             recipeName = (TextView)view.findViewById(R.id.recipename);
-            recipeImage = (ImageView) view.findViewById(R.id.recipeimg);
+            recipeImage = (ImageView) view.findViewById(R.id.recipeImage);
 
         }
     }
