@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,7 +31,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.BitmapTypeRequest;
 import com.bumptech.glide.Glide;
 import com.colewhitley.recipe_share.adapter.recipeAdapter;
 import com.colewhitley.recipe_share.model.Recipe;
@@ -44,7 +41,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +71,7 @@ public class MyRecipes extends AppCompatActivity {
 
     StorageReference storageRef;
     StorageReference imageRef;
+    StorageReference cookedRef;
     Recipe sendRecipe;
 
     RequestQueue queue;
@@ -189,46 +186,52 @@ public class MyRecipes extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 //Toast.makeText(MyRecipes.this, "click at position " + position, Toast.LENGTH_SHORT).show();
 
-//                Recipe loadRecipe = recipes.get(position);
-//                Log.d("PATH", loadRecipe.userEmail + "/" + loadRecipe.recipeName + ".png");
-//                imageRef = storageRef.child(loadRecipe.userEmail + "/" + loadRecipe.recipeName + ".png");
-//
-//                final Dialog nagDialog = new Dialog(MyRecipes.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-//                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                nagDialog.setCancelable(false);
-//                nagDialog.setContentView(R.layout.preview_image);
-//                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
-//                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
-//
-//
-//                Thread t = new Thread(){
-//                    //Bitmap bitmap = null;
-//                    public void run(){
-//                        try {
-//                            loadBitmap = Glide.with(getApplicationContext())
-//                                    .using(new FirebaseImageLoader())
-//                                    .load(imageRef).asBitmap().into(-1, -1).get();
-//                            if (loadBitmap != null)
-//                                Log.d("SEE RECIPE", "BITMAP NOT NULL");
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        } catch (ExecutionException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                };
-//                t.start();
-//                ivPreview.setImageBitmap(loadBitmap);
-//
-//                btnClose.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View arg0) {
-//
-//                        nagDialog.dismiss();
-//                    }
-//                });
-//                nagDialog.show();
+                Recipe loadRecipe = recipes.get(position);
+                imageRef = storageRef.child(loadRecipe.userEmail + "/" + loadRecipe.recipeName + "/recipe.png");
+                Log.d("PATH", loadRecipe.userEmail + "/" + loadRecipe.recipeName + "/recipe.png");
+
+                final Dialog nagDialog = new Dialog(MyRecipes.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                nagDialog.setCancelable(false);
+                nagDialog.setContentView(R.layout.preview_image);
+                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
+                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+
+
+                Thread t = new Thread(){
+                    //Bitmap bitmap = null;
+                    public void run(){
+                        try {
+                            loadBitmap = Glide.with(getApplicationContext())
+                                    .using(new FirebaseImageLoader())
+                                    .load(imageRef).asBitmap().into(-1, -1).get();
+                            if (loadBitmap != null)
+                                Log.d("SEE RECIPE", "BITMAP NOT NULL");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                t.start();
+//                try {
+//                    Log.d("JOINING", "JOINED");
+//                    t.join(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                Log.d("STATE", t.getState().toString());
+                ivPreview.setImageBitmap(loadBitmap);
+
+                btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View arg0) {
+
+                        nagDialog.dismiss();
+                    }
+                });
+                nagDialog.show();
 
             }
 
@@ -256,17 +259,28 @@ public class MyRecipes extends AppCompatActivity {
                                 Log.d("SENDING", input.getText().toString());
                                 sendEmail = input.getText().toString();
                                 //download image convert to bitmap and call uploadImage() and it should work
-                                imageRef = storageRef.child(sendRecipe.userEmail + "/" + sendRecipe.recipeName + ".png");
+                                imageRef = storageRef.child(sendRecipe.userEmail + "/" + sendRecipe.recipeName + "/recipe.png");
+                                cookedRef = storageRef.child(sendRecipe.userEmail + "/" + sendRecipe.recipeName + "/cooked.png");
+                                if(imageRef == null|| cookedRef == null)
+                                    Log.d("REF NULL", "NULL");
+
 
                                 Thread t = new Thread(){
-                                    Bitmap bitmap = null;
+                                    Bitmap recipe_bitmap = null;
+                                    Bitmap cooked_bitmap = null;
                                     public void run(){
                                         try {
-                                            bitmap = Glide.with(getApplicationContext())
+                                            recipe_bitmap = Glide.with(getApplicationContext())
                                                     .using(new FirebaseImageLoader())
                                                     .load(imageRef).asBitmap().into(-1, -1).get();
-                                            if (bitmap != null)
-                                                uploadImage(bitmap);
+                                            cooked_bitmap = Glide.with(getApplicationContext())
+                                                    .using(new FirebaseImageLoader())
+                                                    .load(cookedRef).asBitmap().into(-1, -1).get();
+                                            if (recipe_bitmap != null && cooked_bitmap != null) {
+                                                uploadImage(recipe_bitmap, "recipe.png");
+                                                uploadImage(cooked_bitmap, "cooked.png");
+                                            }
+
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         } catch (ExecutionException e) {
@@ -330,8 +344,8 @@ public class MyRecipes extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void uploadImage(Bitmap bitmap) {
-        imageRef = storageRef.child(sendEmail + "/" + sendRecipe.userName + "'s " + sendRecipe.recipeName + ".png");
+    private void uploadImage(Bitmap bitmap, String imageName) {
+        imageRef = storageRef.child(sendEmail + "/" + sendRecipe.userName + "'s " + sendRecipe.recipeName + "/" + imageName);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] outData = baos.toByteArray();
@@ -377,14 +391,15 @@ public class MyRecipes extends AppCompatActivity {
                 params.put("tags", sendRecipe.tags);
                 params.put("userName", username); //do we want this to be the sender or receivers username?
                 params.put("userEmail", sendEmail); //do we want this to be the sender or receivers email?
-                params.put("imagePath", sendEmail + "/" + sendRecipe.recipeName + ".png");
+                params.put("imagePath", sendEmail + "/" + sendRecipe.recipeName + "/");
                 params.put("date", dateFormat.format(now));
                 params.put("owner", "0");
 
                 return params;
             }
         };
-        queue.add(postReq);
+        if(imageName.equalsIgnoreCase("recipe.png"))
+            queue.add(postReq);
 
 
     }
