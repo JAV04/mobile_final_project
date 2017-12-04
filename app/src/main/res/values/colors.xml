@@ -7,5 +7,13 @@
     <color name="textColor">#ffffff</color>
     <color name="landingColor">#7bb4fcf1</color>
     <color name="colorPrimaryBtn">#4f11aeb3</color>
+
+
+    <color name="imageview1">#aadada</color>
+    <color name="imageview2">#7cbcbc</color>
+
+    <color name="image_border_start">#405da4ef</color>
+    <color name="image_border_end">#dc1677de</color>
+    <color name="image_border_center">#405da4ef</color>
 </resources>
 

@@ -68,7 +68,8 @@ public class FindRecipe extends AppCompatActivity {
     String signPage;
 
     StorageReference storageRef;
-    StorageReference imageRef;
+    StorageReference recipeImageRef;
+    StorageReference cookedImageRef;
 
     RequestQueue queue;
 
@@ -188,21 +189,30 @@ public class FindRecipe extends AppCompatActivity {
             @Override
             public void onLongItemClick(View view, int position) {
                 addRecipe = recipes.get(position);
-                String displayName = addRecipe.userEmail + "/" + addRecipe.recipeName + ".png";
+                String displayName = addRecipe.userEmail + "/" + addRecipe.recipeName + "/";
                 String trueName = displayName.replace(addRecipe.userName + "'s ", "");
-                imageRef = storageRef.child(trueName);
+                recipeImageRef = storageRef.child(trueName + "recipe.png");
+                cookedImageRef = storageRef.child(trueName + "cooked.png");
+
+
+
                 Log.d("IMAGEREF", addRecipe.userEmail + "/" + addRecipe.recipeName + ".png");
 
                 Thread t = new Thread(){
-                    Bitmap bitmap = null;
+                    Bitmap recipe_bitmap = null;
+                    Bitmap cooked_bitmap = null;
                     public void run(){
                         try {
-                            bitmap = Glide.with(getApplicationContext())
+                            recipe_bitmap = Glide.with(getApplicationContext())
                                     .using(new FirebaseImageLoader())
-                                    .load(imageRef).asBitmap().into(-1, -1).get();
-                            if (bitmap != null) {
+                                    .load(recipeImageRef).asBitmap().into(-1, -1).get();
+                            cooked_bitmap = Glide.with(getApplicationContext())
+                                    .using(new FirebaseImageLoader())
+                                    .load(cookedImageRef).asBitmap().into(-1, -1).get();
+                            if (recipe_bitmap != null && cooked_bitmap != null) {
                                 Log.d("UPLOADING", "upload called");
-                                uploadImage(bitmap);
+                                uploadImage(recipe_bitmap, "recipe.png");
+                                uploadImage(cooked_bitmap, "cooked.png");
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -212,11 +222,9 @@ public class FindRecipe extends AppCompatActivity {
                     }
                 };
                 t.start();
-
                 Toast.makeText(FindRecipe.this, "Added recipe", Toast.LENGTH_SHORT).show();
             }
         }));
-
     }
 
     @Override
@@ -257,8 +265,8 @@ public class FindRecipe extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void uploadImage(Bitmap bitmap) {
-        imageRef = storageRef.child(useremail + "/" + addRecipe.userName + "'s " + addRecipe.recipeName + ".png");
+    private void uploadImage(Bitmap bitmap, String imageName) {
+        StorageReference imageRef = storageRef.child(useremail + "/" + addRecipe.userName + "'s " + addRecipe.recipeName + "/" + imageName);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] outData = baos.toByteArray();
@@ -304,15 +312,17 @@ public class FindRecipe extends AppCompatActivity {
                 params.put("tags", addRecipe.tags);
                 params.put("userName", username); //do we want this to be the sender or receivers username?
                 params.put("userEmail", useremail); //do we want this to be the sender or receivers email?
-                params.put("imagePath", useremail + "/" + addRecipe.recipeName + ".png");
+                params.put("imagePath", useremail + "/" + addRecipe.userName + "'s " + addRecipe.recipeName + "/");
                 params.put("date", dateFormat.format(now));
                 params.put("owner", "0");
 
                 return params;
             }
         };
-        queue.add(postReq);
 
+        if(imageName.equalsIgnoreCase("cooked.png")) {
+            queue.add(postReq);
+        }
     }
 
 }

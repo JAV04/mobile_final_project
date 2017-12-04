@@ -30,7 +30,6 @@
             android:inputType="textPersonName"
             android:padding="5dip"
             android:singleLine="true"
-            android:textColor="#999999"
             android:textSize="18sp" />
 
         <EditText
@@ -49,56 +48,82 @@
             android:inputType="textPersonName"
             android:padding="5dip"
             android:singleLine="true"
-            android:textColor="#999999"
             android:textSize="18sp" />
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/images"
+        android:id="@+id/recipeimage"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@id/textfields">
 
-        <ImageView
-            android:id="@+id/cookedimg"
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/textfields"
-            android:layout_toRightOf="@id/instrimg"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_plus" />
+            android:text="Upload Recipe Name"
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/instrimg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="185dp"
             android:layout_below="@id/textfields"
+            android:layout_gravity="center_vertical"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/ic_plus" />
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_add" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/cookedimage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/recipeimage">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Upload Completed Dish: "
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/cookedimg"
+            android:layout_width="match_parent"
+            android:layout_height="185dp"
+            android:layout_below="@id/textfields"
+            android:layout_toRightOf="@id/instrimg"
+            android:layout_weight="1"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_add" />
+
+
+</LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_below="@id/images">
+        android:layout_below="@id/cookedimage">
 
 
         <Button
             android:id="@+id/add_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="add" />
+            android:text="Add to My Recipes"
+            android:background="@drawable/addbtn"/>
 
     </LinearLayout>
 </RelativeLayout>
