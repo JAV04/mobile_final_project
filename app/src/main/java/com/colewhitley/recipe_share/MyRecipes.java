@@ -79,6 +79,8 @@ public class MyRecipes extends AppCompatActivity {
     RecyclerView recyclerView;
     Bitmap loadBitmap;
 
+    ImageView ivPreview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +189,7 @@ public class MyRecipes extends AppCompatActivity {
                 //Toast.makeText(MyRecipes.this, "click at position " + position, Toast.LENGTH_SHORT).show();
 
                 Recipe loadRecipe = recipes.get(position);
+                Log.d("LOOK FOR ME",loadRecipe.recipeName);
                 imageRef = storageRef.child(loadRecipe.userEmail + "/" + loadRecipe.recipeName + "/recipe.png");
                 Log.d("PATH", loadRecipe.userEmail + "/" + loadRecipe.recipeName + "/recipe.png");
 
@@ -195,7 +198,7 @@ public class MyRecipes extends AppCompatActivity {
                 nagDialog.setCancelable(false);
                 nagDialog.setContentView(R.layout.preview_image);
                 Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
-                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+                ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
 
 
                 Thread t = new Thread(){
@@ -212,6 +215,7 @@ public class MyRecipes extends AppCompatActivity {
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         }
+                        ivPreview.setImageBitmap(loadBitmap);
                     }
                 };
                 t.start();
@@ -222,7 +226,6 @@ public class MyRecipes extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
                 Log.d("STATE", t.getState().toString());
-                ivPreview.setImageBitmap(loadBitmap);
 
                 btnClose.setOnClickListener(new View.OnClickListener() {
                     @Override
