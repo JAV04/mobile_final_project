@@ -44,7 +44,7 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
     public void onBindViewHolder(recipeAdapter.ViewHolder viewHolder, int i) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         Log.d("LOOK FOR ME",recipes.get(i).imagePath + "recipe.png");
-        StorageReference imageRefRecipe = storageRef.child(recipes.get(i).imagePath + "recipe.png");
+        //StorageReference imageRefRecipe = storageRef.child(recipes.get(i).imagePath + "recipe.png");
         StorageReference imageRefCooked = storageRef.child(recipes.get(i).imagePath + "cooked.png");
         Tags tags = new Tags(recipes.get(i).tags);
 
@@ -54,7 +54,7 @@ public class recipeAdapter extends RecyclerView.Adapter<recipeAdapter.ViewHolder
 
         Glide.with(context)
                 .using(new FirebaseImageLoader())
-                .load(imageRefRecipe)
+                .load(imageRefCooked)
                 .into(viewHolder.recipeImage);
 
     }
