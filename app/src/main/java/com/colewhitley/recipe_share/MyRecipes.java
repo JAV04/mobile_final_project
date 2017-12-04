@@ -327,9 +327,11 @@ public class MyRecipes extends AppCompatActivity {
                     if (temp.recipeName.toLowerCase().contains(s.toLowerCase())) {
                         tempList.add(temp);
                     }
-                    for(String tag: tags.tagsList){
-                        if(tag.toLowerCase().contains(s.toLowerCase())){
-                            tempList.add(temp);
+                    else{
+                        for (String tag : tags.tagsList) {
+                            if (tag.toLowerCase().contains(s.toLowerCase())) {
+                                tempList.add(temp);
+                            }
                         }
                     }
                 }
