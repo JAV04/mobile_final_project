@@ -16,8 +16,13 @@ public class Tags {
 
     public Tags(String str){
         //assume that the list is comma seperated
-        tagsList = Arrays.asList(str.toLowerCase().split(","));
         tags = str;
+
+        if(tags.contains(","))
+            tagsList = Arrays.asList(str.toLowerCase().split(","));
+        else
+            tagsList = Arrays.asList(str.toLowerCase().split(" "));
+
     }
 
     public String toString(){
