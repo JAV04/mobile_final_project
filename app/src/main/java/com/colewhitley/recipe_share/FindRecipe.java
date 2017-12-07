@@ -1,7 +1,9 @@
 package com.colewhitley.recipe_share;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
@@ -15,7 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -70,12 +75,15 @@ public class FindRecipe extends AppCompatActivity {
     StorageReference storageRef;
     StorageReference recipeImageRef;
     StorageReference cookedImageRef;
+    StorageReference imageRef;
 
     RequestQueue queue;
 
     RecyclerView recyclerView;
 
     Recipe addRecipe;
+    Bitmap loadBitmap;
+    ImageView ivPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +192,68 @@ public class FindRecipe extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 //Toast.makeText(MyRecipes.this, "click at position " + position, Toast.LENGTH_SHORT).show();
+                Recipe loadRecipe = recipes.get(position);
+                Log.d("LOOK FOR ME",loadRecipe.recipeName);
+                String recipeName = loadRecipe.recipeName.substring(loadRecipe.recipeName.indexOf(" ") + 1);
+                String truRecipeName = recipeName.substring(recipeName.indexOf(" ") + 1);
+                String truePath = loadRecipe.userEmail + "/" + truRecipeName + "/recipe.png";
+                imageRef = storageRef.child(truePath);
+                Log.d("PATH", truePath);
+
+                final Dialog nagDialog = new Dialog(FindRecipe.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                nagDialog.setCancelable(false);
+                nagDialog.setContentView(R.layout.preview_image);
+                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
+                boolean ready = false;
+                loadBitmap = null;
+
+                Thread t = new Thread() {
+                    //Bitmap bitmap = null;
+                    public void run() {
+                        try {
+                            loadBitmap = Glide.with(getApplicationContext())
+                                    .using(new FirebaseImageLoader())
+                                    .load(imageRef).asBitmap().into(-1, -1).get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (loadBitmap != null) {
+                                    Log.d("SEE RECIPE", "BITMAP NOT NULL");
+                                    ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+                                    ivPreview.setImageBitmap(loadBitmap);
+                                }
+                            }
+                        });
+                    }
+                };
+                t.start();
+
+
+
+//                try {
+//                    Log.d("JOINING", "JOINED");
+//                    t.join(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                Log.d("STATE", t.getState().toString());
+
+                btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View arg0) {
+                        nagDialog.dismiss();
+                    }
+                });
+                nagDialog.show();
+
             }
+
 
             @Override
             public void onLongItemClick(View view, int position) {
