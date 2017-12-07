@@ -179,7 +179,7 @@ public class FindRecipe extends AppCompatActivity {
     private void initViews() {
         recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view2);
         recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 1);
         recyclerView.setLayoutManager(layoutManager);
 
 

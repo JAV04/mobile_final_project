@@ -110,6 +110,7 @@ public class AddRecipe extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, GALLERY_INTENT_RECIPE);
+                instructionImgView.setPadding(5,5,5,5);
                 return false;
             }
         });
@@ -127,6 +128,7 @@ public class AddRecipe extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, GALLERY_INTENT_COOKED);
+                cookedImgView.setPadding(5,5,5,5);
                 return false;
             }
         });
@@ -341,7 +343,7 @@ public class AddRecipe extends AppCompatActivity {
 
     private Bitmap setInstrPic() {
 
-        instructionImgView.setPadding(0,0,0,0);
+        instructionImgView.setPadding(5,5,5,5);
         // Get the dimensions of the View
         int targetW = instructionImgView.getWidth();
         int targetH = instructionImgView.getHeight();
@@ -372,7 +374,7 @@ public class AddRecipe extends AppCompatActivity {
     private Bitmap setCookedPic() {
         // Get the dimensions of the View
 
-        cookedImgView.setPadding(0,0,0,0);
+        cookedImgView.setPadding(5,5,5,5);
 
         int targetW = cookedImgView.getWidth();
         int targetH = cookedImgView.getHeight();
