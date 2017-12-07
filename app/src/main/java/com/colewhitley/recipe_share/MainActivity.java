@@ -11,8 +11,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private Button add_btn;
     private Button recipes_btn;
     private Button find_btn;
+
+    SignInButton signInBtn;
 
 
     @Override
@@ -74,7 +78,22 @@ public class MainActivity extends AppCompatActivity {
         add_btn = findViewById(R.id.add_btn);
         recipes_btn = findViewById(R.id.recipes_btn);
         find_btn = findViewById(R.id.find_btn);
+
+        signInBtn = (SignInButton)findViewById(R.id.sign_in_button);
+            signInBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //FirebaseAuth.getInstance().signOut();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                    signIn();
+                    user = mAuth.getCurrentUser();
+                }
+            });
+
+        signInBtn.setSize(SignInButton.SIZE_WIDE);
     }
+
+
 
     @Override
     public void onStart() {

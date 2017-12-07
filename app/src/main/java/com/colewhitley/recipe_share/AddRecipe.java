@@ -340,6 +340,8 @@ public class AddRecipe extends AppCompatActivity {
     }
 
     private Bitmap setInstrPic() {
+
+        instructionImgView.setPadding(0,0,0,0);
         // Get the dimensions of the View
         int targetW = instructionImgView.getWidth();
         int targetH = instructionImgView.getHeight();
@@ -369,6 +371,9 @@ public class AddRecipe extends AppCompatActivity {
 
     private Bitmap setCookedPic() {
         // Get the dimensions of the View
+
+        cookedImgView.setPadding(0,0,0,0);
+
         int targetW = cookedImgView.getWidth();
         int targetH = cookedImgView.getHeight();
 

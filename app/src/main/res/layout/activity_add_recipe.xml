@@ -64,6 +64,7 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:text="Upload Recipe Name"
             android:textSize="18sp" />
@@ -76,7 +77,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:padding="16dp"
+            android:padding="50dp"
             app:srcCompat="@drawable/ic_add" />
     </LinearLayout>
     <LinearLayout
@@ -90,9 +91,10 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:text="Upload Completed Dish: "
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/cookedimg"
@@ -101,7 +103,7 @@
             android:layout_below="@id/textfields"
             android:layout_toRightOf="@id/instrimg"
             android:layout_weight="1"
-            android:padding="16dp"
+            android:padding="50dp"
             app:srcCompat="@drawable/ic_add" />
 
 
@@ -122,8 +124,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="Add to My Recipes"
-            android:background="@drawable/addbtn"/>
+            android:background="@drawable/edittxt"
+            android:text="Add to My Recipes" />
 
     </LinearLayout>
 </RelativeLayout>

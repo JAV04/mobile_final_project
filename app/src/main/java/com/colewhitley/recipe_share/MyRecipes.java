@@ -3,6 +3,7 @@ package com.colewhitley.recipe_share;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
@@ -76,9 +77,10 @@ public class MyRecipes extends AppCompatActivity {
 
     RequestQueue queue;
 
+    private boolean ready = false;
+
     RecyclerView recyclerView;
     Bitmap loadBitmap;
-
     ImageView ivPreview;
 
 
@@ -178,14 +180,14 @@ public class MyRecipes extends AppCompatActivity {
     private void initViews() {
         recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view);
         recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 1);
         recyclerView.setLayoutManager(layoutManager);
 
         recipeAdapter adapter = new recipeAdapter(getApplicationContext(), recipes);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerViewClickListener(getApplicationContext(), recyclerView, new RecyclerViewClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position) throws InterruptedException {
                 //Toast.makeText(MyRecipes.this, "click at position " + position, Toast.LENGTH_SHORT).show();
 
                 Recipe loadRecipe = recipes.get(position);
@@ -198,45 +200,54 @@ public class MyRecipes extends AppCompatActivity {
                 nagDialog.setCancelable(false);
                 nagDialog.setContentView(R.layout.preview_image);
                 Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
-                ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+                ready = false;
+                loadBitmap = null;
 
-
-                Thread t = new Thread(){
+                Thread t = new Thread() {
                     //Bitmap bitmap = null;
-                    public void run(){
+                    public void run() {
                         try {
                             loadBitmap = Glide.with(getApplicationContext())
                                     .using(new FirebaseImageLoader())
                                     .load(imageRef).asBitmap().into(-1, -1).get();
-                            if (loadBitmap != null)
-                                Log.d("SEE RECIPE", "BITMAP NOT NULL");
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         }
-                        ivPreview.setImageBitmap(loadBitmap);
-                    }
+                        runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                        if (loadBitmap != null) {
+                                            Log.d("SEE RECIPE", "BITMAP NOT NULL");
+                                            ivPreview = (ImageView)nagDialog.findViewById(R.id.iv_preview_image);
+                                            ivPreview.setImageBitmap(loadBitmap);
+                                        }
+                                }
+                            });
+                        }
                 };
                 t.start();
+
+
+
 //                try {
 //                    Log.d("JOINING", "JOINED");
 //                    t.join(1000);
 //                } catch (InterruptedException e) {
 //                    e.printStackTrace();
 //                }
-                Log.d("STATE", t.getState().toString());
+                        Log.d("STATE", t.getState().toString());
 
-                btnClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
+                        btnClose.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View arg0) {
+                                nagDialog.dismiss();
+                            }
+                        });
+                        nagDialog.show();
 
-                        nagDialog.dismiss();
                     }
-                });
-                nagDialog.show();
-
-            }
 
             @Override
             public void onLongItemClick(View view, int position) {
@@ -396,7 +407,7 @@ public class MyRecipes extends AppCompatActivity {
                 params.put("tags", sendRecipe.tags);
                 params.put("userName", username); //do we want this to be the sender or receivers username?
                 params.put("userEmail", sendEmail); //do we want this to be the sender or receivers email?
-                params.put("imagePath", sendEmail + "/" + sendRecipe.recipeName + "/");
+                params.put("imagePath", sendEmail + "/" + sendRecipe.userName + "'s " + sendRecipe.recipeName + "/");
                 params.put("date", dateFormat.format(now));
                 params.put("owner", "0");
 
